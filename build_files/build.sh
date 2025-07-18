@@ -2,6 +2,10 @@
 
 set -ouex pipefail
 
+### Copy sysfiles
+cp -rv /ctx/sysfiles/* /
+chmod +x /etc/cron.daily/*
+
 ### Install packages
 
 # Packages can be installed from any enabled yum repo on the image.
@@ -9,16 +13,37 @@ set -ouex pipefail
 # List of rpmfusion packages can be found here:
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
-# this installs a package from fedora repos
-dnf5 install -y tmux 
+# This installs a package from fedora repos
+dnf5 group install --skip-unavailable -y cosmic-desktop
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
+dnf5 install --skip-unavailable -y $(cat /ctx/rpm_packages)
 
-#### Example for enabling a System Unit File
+# Enable copr repositories
+dnf5 -y copr enable atim/starship
+dnf5 -y copr enable pennbauman/ports
 
+# Install from copr repositories
+dnf5 -y install starship
+dnf5 -y install lf
+
+# Disable copr repositories
+dnf5 -y copr disable atim/starship
+dnf5 -y copr disable pennbauman/ports
+
+#### System Unit File
+systemctl enable tuned.service
 systemctl enable podman.socket
+systemctl enable fstrim.timer
+systemctl enable firewalld.service
+systemctl enable tailscaled.service
+
+### Change default firewalld zone
+cp /etc/firewalld/firewalld-workstation.conf /etc/firewalld/firewalld-workstation.conf.bak
+sed -i 's/DefaultZone=FedoraWorkstation/DefaultZone=drop/g' /etc/firewalld/firewalld-workstation.conf
+
+### Yubico Challange for sudo
+cp /etc/pam.d/sudo /etc/pam.d/sudo.bak
+sed -i '/PAM-1.0/a\auth       required     pam_yubico.so mode=challenge-response' /etc/pam.d/sudo
+
+### Create missing dirs
+mkdir -p /var/spool/anacron
