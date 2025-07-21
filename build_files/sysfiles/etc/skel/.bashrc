@@ -23,25 +23,3 @@ source ~/.config/terminal/autoruns
 # alt+c, To quickly switch into a selected subdirectory
 # ctrl+r, For smart searching your command history
 source /usr/share/fzf/shell/key-bindings.bash
-
-# starship
-if [ -f "/run/.toolboxenv" ]; then
-    export STARSHIP_CONFIG=~/.config/starship/starship_toolbox.toml
-else
-    export STARSHIP_CONFIG=~/.config/starship/starship.toml
-fi
-
-# tailscale bash competion
-if [ -f "/bin/tailscale" ]; then
-    source <(tailscale completion bash)
-fi
-
-# zoxide
-if [ -f "/usr/bin/zoxide" ]; then
-    eval "$(zoxide init --cmd cd bash)"
-fi
-
-# auto-appended
-if [ -f "/bin/starship" ]; then
-    eval "$(starship init bash)"
-fi
