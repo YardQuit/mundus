@@ -42,8 +42,7 @@ cp /etc/firewalld/firewalld-workstation.conf /etc/firewalld/firewalld-workstatio
 sed -i 's/DefaultZone=FedoraWorkstation/DefaultZone=drop/g' /etc/firewalld/firewalld-workstation.conf
 
 ### Yubico Challange for sudo
-cp /etc/pam.d/sudo /etc/pam.d/sudo.bak
-sed -i '/PAM-1.0/a\auth       required     pam_yubico.so mode=challenge-response' /etc/pam.d/sudo
+touch /etc/.trigger_yubikey_script
 
 ### Create missing dirs
 mkdir -p /var/spool/anacron
