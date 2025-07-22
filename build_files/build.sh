@@ -41,8 +41,9 @@ systemctl enable tailscaled.service
 cp /etc/firewalld/firewalld-workstation.conf /etc/firewalld/firewalld-workstation.conf.bak
 sed -i 's/DefaultZone=FedoraWorkstation/DefaultZone=drop/g' /etc/firewalld/firewalld-workstation.conf
 
-### Yubico Challange for sudo
-touch /etc/.trigger_yubikey_script
+### Yubikey configuration
+cp /etc/pam.d/sudo /etc/pam.d/sudo.bak &&
+sed -i '/PAM-1.0/a\auth       required     pam_yubico.so mode=challenge-response' /etc/pam.d/sudo
 
 ### Create missing dirs
 mkdir -p /var/spool/anacron

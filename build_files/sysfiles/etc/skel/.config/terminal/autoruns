@@ -75,28 +75,6 @@ mkdir -p /tmp/Volatile
     fi
   fi
 
-# Yubikey configuration
- if [ -f /etc/.trigger_yubikey_script ]; then
-     read -p "Do you want to configure PAM to require Yubikey for sudo? (y/N): " response
-     if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
-         echo "Command runs with sudo"
-         sudo cp /etc/pam.d/sudo /etc/pam.d/sudo.bak &&
-         sudo sed -i '/PAM-1.0/a\auth       required     pam_yubico.so mode=challenge-response' /etc/pam.d/sudo
-         sudo echo "Yubikey for sudo has successfuly been activated." 
-         if [ $? == 1 ]; then
-             echo "Yubikey for sudo was NOT successfuly activated"
-             exit
-         else
-             sudo rm /etc/.trigger_yubikey_script > /dev/null
-             exit
-         fi
-     else 
-         echo "Command runs with sudo"
-         sudo rm /etc/.trigger_yubikey_script > /dev/null
-         echo "Yubikey for sudo will not be activated and asked for again."
-     fi
- fi 
-
 # starship
  if [ -f "/run/.toolboxenv" ]; then
      export STARSHIP_CONFIG=~/.config/starship/starship_toolbox.toml
